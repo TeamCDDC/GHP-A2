@@ -1,0 +1,53 @@
+/*=============================================================================
+	FilterPixelShader12.usf: Filter pixel shader source.
+	Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+=============================================================================*/
+
+#define NUM_SAMPLES 12
+// macros fall over with the (NUM_SAMPLES + 1)/2 stuff, so, just use a number
+// (12 + 1) / 2 = 6
+#define NUM_VARYINGS 6
+
+half ComputeMask(vec2 UV)
+{
+	return 1.0;
+}
+
+//================
+
+UNIFORM_SAMPLER2D(TextureBase, TEXUNIT0);
+UNIFORM(half4, SampleWeights16[NUM_SAMPLES]);
+// minv, minv, maxu,maxv
+UNIFORM(vec4, SampleMaskRect);
+
+
+IN_VARYING_ARRAY_DEFAULT(vec4, OffsetUVs, NUM_VARYINGS, TEXCOORD0);
+
+OUT_BUILTIN(vec4, gl_FragColor, COLOR0)
+
+PIXEL_MAIN
+{
+	int SampleIndex;
+	half4 Sum = half4(0);
+	for(SampleIndex = 0;SampleIndex < NUM_SAMPLES - 1;SampleIndex += 2)
+	{
+		half Mask; 
+		vec4 UVUV = OffsetUVs[SampleIndex / 2];
+		
+		Mask = ComputeMask(UVUV.xy);
+		Sum += USE_SCENECOLOR(texture2D(TextureBase,UVUV.xy)) * Mask * SampleWeights16[SampleIndex + 0];
+
+		Mask = ComputeMask(UVUV.wz);
+		Sum += USE_SCENECOLOR(texture2D(TextureBase,UVUV.wz)) * Mask * SampleWeights16[SampleIndex + 1];
+	}
+	if(SampleIndex < NUM_SAMPLES)
+	{
+		vec4 UVUV = OffsetUVs[(NUM_SAMPLES - 1) / 2]; // modified from OffsetUVs[SampleIndex / 2] to prevent PowerVR compilation bug
+
+		half Mask = ComputeMask(UVUV.xy);
+		Sum += USE_SCENECOLOR(texture2D(TextureBase,UVUV.xy)) * Mask * SampleWeights16[SampleIndex + 0];
+	}
+
+	// RETURN_COLOR not needed unless writing to SceneColor;
+	gl_FragColor = Sum;
+}

@@ -1,0 +1,50 @@
+/*=============================================================================
+	ApplyDistortPixelShader.usf: Pixel shader source for applying distortion
+	Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+=============================================================================*/
+
+const half InvDistortionScaleBias = 8.0 / (4.0 * 255.0);
+
+UNIFORM_SAMPLER2D(SceneColorTexture, TEXUNIT0);
+
+/**
+ * contains accumulated distortion values as
+ * R=positive horizontal offset
+ * G=positive vertical offset
+ * B=negative horizontal offset
+ * A=negative vertical offset
+ */
+UNIFORM_SAMPLER2D(Texture2, TEXUNIT1);
+
+/**
+ * Contains the valid region in the scenecolor texture (in UV space).
+ * Trying to sample outside this region will yield garbage colors.
+ * X,Y = Upper-left corner
+ * Z,W = Lower-left corner
+ */
+UNIFORM(vec4, SceneColorRect);
+
+
+IN_VARYING_DEFAULT(vec2, TextureUV, TEXCOORD0);
+OUT_BUILTIN(vec4, gl_FragColor, COLOR0)
+
+
+PIXEL_MAIN
+{
+	// sample accumulated distortion and apply inverse scale
+	half4 AccumDist = texture2D(Texture2,TextureUV);
+	// offset = [R-B,G-A] and flip Y
+	half2 DistOffset = (AccumDist.rg - AccumDist.ba) * half2(InvDistortionScaleBias,-InvDistortionScaleBias);
+	half2 NewTexCoord = TextureUV + DistOffset;
+
+	// If we're about to sample outside the valid SceneColorRect, lerp towards 0 distortion.
+	half2 RectCoords = (NewTexCoord - SceneColorRect.xy) / (SceneColorRect.zw - SceneColorRect.xy);
+	RectCoords = RectCoords * 2.0 - 1.0;
+	half2 Vignette = saturate( abs( RectCoords ) * 5.0 - 4.0 );
+	lowp float Factor = min( dot( Vignette, Vignette ), 1.0 );
+	NewTexCoord = mix( NewTexCoord, TextureUV, Factor );
+
+	// sample screen using offset coords
+	half4 DistColor = texture2D(SceneColorTexture, NewTexCoord);
+	gl_FragColor = DistColor;
+}

@@ -1,0 +1,295 @@
+/**
+ * Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+ */
+
+UNIFORM_SAMPLER2D(SceneColorTexture, TEXUNIT0);
+UNIFORM_SAMPLER2D_HIGH(SceneDepthTexture, TEXUNIT1);
+UNIFORM_SAMPLER2D_HIGH(ShadowDepthTexture, TEXUNIT2);
+
+UNIFORM_HIGH(mat4, ScreenToShadowMatrix);
+UNIFORM_MEDIUM(float, ShadowFadeFraction);
+UNIFORM(vec3, ShadowBufferSizeAndSoftTransitionScale);
+UNIFORM(vec2, ShadowTexelSize);
+UNIFORM(vec4, ShadowModulateColor);
+
+//@DEBUG: Set to 1 to output the shadow depth buffer as color. Do the same in ShadowRendering.cpp.
+#define VISUALIZE_SHADOW_DEPTH 0
+
+//////////////////////////
+// SCENE COLOR DEPTH CODE (should be shared)
+//////////////////////////
+
+// Mirrors the value used in FPerspectiveMatrix for creating a perspective matrix with an infinite far plane
+#define Z_PRECISION	0.001
+
+#undef SUPPORTS_DEPTH_TEXTURES
+#define SUPPORTS_DEPTH_TEXTURES 1
+#define MODSHADOW_LIGHTTYPE_DIRECTIONAL 1
+
+UNIFORM_HIGH(vec4, ScreenPositionScaleBias);
+UNIFORM_HIGH(vec4, MinZ_MaxZRatio);
+
+// Converts depth buffer Z / W into W
+highp float ConvertFromDeviceZ(highp float DeviceZ)
+{
+	// Clamp to be valid
+	// Only values less than 1 - Z_PRECISION can be decoded, but background depths may have been cleared to 1
+	// seems not needed, we rather should clear depth differently:	DeviceZ = min(DeviceZ, 1.0 - Z_PRECISION);
+
+	return 1.0 / (DeviceZ * MinZ_MaxZRatio[2] - MinZ_MaxZRatio[3]);	
+}
+
+/** 
+ * Encodes the W coordinate of a pixel for storage in 16 bit floating point. 
+ * Note: This must match EncodeFloatW in Scene.h!
+ */
+float EncodeFloatW(float W)
+{
+	#if SUPPORTS_DEPTH_TEXTURES
+		return 0.0;
+	#else
+		float DepthAdd = -MinZ_MaxZRatio[0];
+		float DepthMul = 1.0 - MinZ_MaxZRatio[1];
+		// Encode the depth so that it handles world space depth ranges much larger than 16 fp max
+		return DepthMul + DepthAdd / W;
+	#endif
+}
+
+/** 
+ * Decodes the value stored in scene color alpha into world space depth. 
+ * Note: This must match DecodeFloatW in Scene.h!
+ */
+float DecodeFloatW(float EncodedW)
+{
+	float DepthAdd = -MinZ_MaxZRatio[0];
+	float DepthMul = 1.0 - MinZ_MaxZRatio[1];
+	// Solve for W
+	return DepthAdd / (EncodedW - DepthMul);
+}
+
+/** return the scene lighting texture */
+vec3 CalcSceneColor(vec2 ScreenUV)
+{
+	return USE_SCENECOLOR( texture2D(SceneColorTexture,ScreenUV) ).rgb;
+}
+
+/** Returns clip space W, which is world space distance along the View Z axis. */
+highp float CalcSceneDepth( float2 ScreenUV )
+{
+#if SUPPORTS_DEPTH_TEXTURES
+	// Fetch the depth buffer Z / W value, solve for W
+	return ConvertFromDeviceZ(texDepth2Dlod(SceneDepthTexture, float4(ScreenUV,0.0,0.0)).r);
+#else
+	// Fetch the encoded W in scene color alpha, solve for W
+	return DecodeFloatW(tex2Dlod(SceneColorTexture, float4(ScreenUV,0.0,0.0)).a);
+#endif
+}
+
+/**
+ * Returns scene color in rgb, depth in a
+ */
+float4 CalcSceneColorAndDepth( float2 ScreenUV )
+{
+	return float4(CalcSceneColor(ScreenUV), CalcSceneDepth(ScreenUV));
+}
+
+highp float PreviousDepth(float4 ScreenPosition)
+{
+	ScreenPosition.xy = float2(ScreenPosition.xy / ScreenPosition.w * ScreenPositionScaleBias.xy + ScreenPositionScaleBias.wz);
+	return CalcSceneDepth(ScreenPosition.xy);
+}
+
+
+//////////////////////////
+// SHADOW PROJECTION CODE
+//////////////////////////
+
+
+/** Returns an occlusion factor based on the depths. */
+float CalculateOcclusion(float SceneDepth, float ShadowmapDepth)
+{
+	// The standard comparison is SceneDepth < ShadowmapDepth
+	// Using a soft transition based on depth difference
+	// Offsets shadows a bit but reduces self shadowing artifacts considerably
+	float TransitionScale = ShadowBufferSizeAndSoftTransitionScale.z;
+	return saturate((ShadowmapDepth - SceneDepth) * TransitionScale + 1.0);
+}
+
+/**
+ * Takes samples and compares and averages manually.
+ *
+ * @return a PCF value between 0 and 1
+ */
+half ManualPCF(highp float4 ShadowPosition)
+{
+#if SHADOW_PROJECTION_QUALITY == 1
+	// Lowest quality, highest performance
+	highp float ReprojectedSceneDepth = ShadowPosition.z;
+	highp float ShadowDepth = texDepth2Dlod(ShadowDepthTexture, float4(ShadowPosition.xy, 0, 0)).r;
+	float SampleValue = CalculateOcclusion( ReprojectedSceneDepth, ShadowDepth );
+	return SampleValue;
+#elif SHADOW_PROJECTION_QUALITY == 2
+	// Higher quality, much slower (but appropriate for faster devices)
+	// Filter the shadow comparison using 9 point samples in a grid and 4 PCF calculations based on those 9 samples
+	float2 Fraction = frac(ShadowPosition.xy * ShadowBufferSizeAndSoftTransitionScale.xy);
+	float2 Sample00TexelCorner = floor(ShadowPosition.xy * ShadowBufferSizeAndSoftTransitionScale.xy - float2(1, 1));
+	float2 Sample00TexelCenter = Sample00TexelCorner + float2(.5, .5);
+
+	float Sample00Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4(Sample00TexelCenter * ShadowTexelSize, 0, 0)).r);
+	
+	float Sample01Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(0, 1)) * ShadowTexelSize, 0, 0)).r);
+	float Sample02Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(0, 2)) * ShadowTexelSize, 0, 0)).r);
+	float Sample10Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(1, 0)) * ShadowTexelSize, 0, 0)).r);
+	float Sample11Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(1, 1)) * ShadowTexelSize, 0, 0)).r);
+	
+	float Sample12Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(1, 2)) * ShadowTexelSize, 0, 0)).r);
+	float Sample20Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(2, 0)) * ShadowTexelSize, 0, 0)).r);
+	float Sample21Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(2, 1)) * ShadowTexelSize, 0, 0)).r);
+	float Sample22Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(2, 2)) * ShadowTexelSize, 0, 0)).r);
+	
+	float2 HorizontalLerp00 = lerp(float2(Sample00Value, Sample01Value), float2(Sample10Value, Sample11Value), Fraction.xx);
+	float PCFResult00 = lerp(HorizontalLerp00.x, HorizontalLerp00.y, Fraction.y); 
+	float2 HorizontalLerp01 = lerp(float2(Sample01Value, Sample02Value), float2(Sample11Value, Sample12Value), Fraction.xx);
+	float PCFResult01 = lerp(HorizontalLerp01.x, HorizontalLerp01.y, Fraction.y); 
+	float2 HorizontalLerp10 = lerp(float2(Sample10Value, Sample11Value), float2(Sample20Value, Sample21Value), Fraction.xx);
+	float PCFResult10 = lerp(HorizontalLerp10.x, HorizontalLerp10.y, Fraction.y); 
+	float2 HorizontalLerp11 = lerp(float2(Sample11Value, Sample12Value), float2(Sample21Value, Sample22Value), Fraction.xx);
+	float PCFResult11 = lerp(HorizontalLerp11.x, HorizontalLerp11.y, Fraction.y); 
+	
+	return saturate((PCFResult00 + PCFResult01 + PCFResult10 + PCFResult11) * 0.25);
+#else
+	//error - not yet tested
+
+	// Hightest quality, slowest
+	// Filter the shadow comparison using 16 point samples in a grid and 9 PCF calculations based on those 16 samples
+	float2 Fraction = frac(ShadowPosition.xy * ShadowBufferSizeAndSoftTransitionScale.xy);
+	float2 Sample00TexelCenter = floor(ShadowPosition.xy * ShadowBufferSizeAndSoftTransitionScale.xy - float2(1, 1));
+
+	float Sample00Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4(Sample00TexelCenter * ShadowTexelSize, 0, 0)).x);
+	float Sample10Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(1, 0)) * ShadowTexelSize, 0, 0)).x);
+	float Sample20Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(2, 0)) * ShadowTexelSize, 0, 0)).x);
+	float Sample30Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(3, 0)) * ShadowTexelSize, 0, 0)).x);
+	
+	float Sample01Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(0, 1)) * ShadowTexelSize, 0, 0)).x);
+	float Sample11Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(1, 1)) * ShadowTexelSize, 0, 0)).x);
+	float Sample21Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(2, 1)) * ShadowTexelSize, 0, 0)).x);
+	float Sample31Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(3, 1)) * ShadowTexelSize, 0, 0)).x);
+
+	float Sample02Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(0, 2)) * ShadowTexelSize, 0, 0)).x);
+	float Sample12Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(1, 2)) * ShadowTexelSize, 0, 0)).x);
+	float Sample22Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(2, 2)) * ShadowTexelSize, 0, 0)).x);
+	float Sample32Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(3, 2)) * ShadowTexelSize, 0, 0)).x);
+
+	float Sample03Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(0, 3)) * ShadowTexelSize, 0, 0)).x);
+	float Sample13Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(1, 3)) * ShadowTexelSize, 0, 0)).x);
+	float Sample23Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(2, 3)) * ShadowTexelSize, 0, 0)).x);
+	float Sample33Value = CalculateOcclusion(ShadowPosition.z, texDepth2Dlod(ShadowDepthTexture, float4((Sample00TexelCenter + float2(3, 3)) * ShadowTexelSize, 0, 0)).x);
+
+	float2 VerticalLerp00 = lerp(float2(Sample00Value, Sample01Value), float2(Sample10Value, Sample11Value), Fraction.xx);
+	float PCFResult00 = lerp(VerticalLerp00.x, VerticalLerp00.y, Fraction.y);
+	float2 VerticalLerp10 = lerp(float2(Sample10Value, Sample11Value), float2(Sample20Value, Sample21Value), Fraction.xx);
+	float PCFResult10 = lerp(VerticalLerp10.x, VerticalLerp10.y, Fraction.y);
+	float2 VerticalLerp20 = lerp(float2(Sample20Value, Sample21Value), float2(Sample30Value, Sample31Value), Fraction.xx);
+	float PCFResult20 = lerp(VerticalLerp20.x, VerticalLerp20.y, Fraction.y);
+
+	float2 VerticalLerp01 = lerp(float2(Sample01Value, Sample02Value), float2(Sample11Value, Sample12Value), Fraction.xx);
+	float PCFResult01 = lerp(VerticalLerp01.x, VerticalLerp01.y, Fraction.y);
+	float2 VerticalLerp11 = lerp(float2(Sample11Value, Sample12Value), float2(Sample21Value, Sample22Value), Fraction.xx);
+	float PCFResult11 = lerp(VerticalLerp11.x, VerticalLerp11.y, Fraction.y);
+	float2 VerticalLerp21 = lerp(float2(Sample21Value, Sample22Value), float2(Sample31Value, Sample32Value), Fraction.xx);
+	float PCFResult21 = lerp(VerticalLerp21.x, VerticalLerp21.y, Fraction.y);
+
+	float2 VerticalLerp02 = lerp(float2(Sample02Value, Sample03Value), float2(Sample12Value, Sample13Value), Fraction.xx);
+	float PCFResult02 = lerp(VerticalLerp02.x, VerticalLerp02.y, Fraction.y);
+	float2 VerticalLerp12 = lerp(float2(Sample12Value, Sample13Value), float2(Sample22Value, Sample23Value), Fraction.xx);
+	float PCFResult12 = lerp(VerticalLerp12.x, VerticalLerp12.y, Fraction.y);
+	float2 VerticalLerp22 = lerp(float2(Sample22Value, Sample23Value), float2(Sample32Value, Sample33Value), Fraction.xx);
+	float PCFResult22 = lerp(VerticalLerp22.x, VerticalLerp22.y, Fraction.y);
+
+	return saturate((PCFResult00 + PCFResult10 + PCFResult20 + PCFResult01 + PCFResult11 + PCFResult21 + PCFResult02 + PCFResult12 + PCFResult22) * 0.11111);	
+#endif
+}
+
+float ShadowAttenuation(float4 ScreenPositionVec,float SceneDepth)
+{
+//	// derive world position from scene depth
+//	float4 WorldPosition = MulMatrix(ScreenToWorld,float4((ScreenPositionVec.xy/ScreenPositionVec.w)*SceneDepth,SceneDepth,1));
+//	// vector from world position to light
+//	float4 WorldLightVector = float4((LightPosition.xyz - WorldPosition.xyz),0) * LightPosition.w;	
+//	// mul world vector by 1/radius to get distance attenuation
+//	half Attenuation = pow(
+//		saturate(1.0f - Square(max(0,length(WorldLightVector) * FalloffDistanceScale + FalloffDistanceBias)) ),
+//		FalloffExponent
+//		);
+//	
+//#if MODSHADOW_LIGHTTYPE_SPOT
+//	// radial attenuation based on inner/outer cone angles for spot lights
+//	Attenuation *= Square(clamp((dot(normalize((float3)WorldLightVector.xyz), -SpotDirection) - SpotAngles.x) * SpotAngles.y,0,1));
+//#endif
+//	
+//	// attenuation result as a percentage of world light vector length to light radius 
+//	return Attenuation;
+	return 1.0;
+}
+
+IN_VARYING_HIGH(vec4, ScreenPosition, TEXCOORD0);
+IN_VARYING_HIGH(vec4, HomScreenDirection, TEXCOORD1);
+IN_VARYING_HIGH(float, Divider, TEXCOORD2);
+
+// CPU side computed MulMatrix(ScreenToShadowMatrix, float4(0, 0, 0, 1));
+UNIFORM(vec4, HomShadowStartPos);
+
+// FadeColorAndAmount.z = 1-FadeColorAndAmount.w, as an optimization
+// We don't actually need the color in xyz, since the shadows are modulated, we can just use white
+UNIFORM(vec4, FadeColorAndAmount);
+
+// TODO: fog support
+
+OUT_BUILTIN(vec4, gl_FragColor, COLOR0)
+
+PIXEL_MAIN
+{
+#if VISUALIZE_SHADOW_DEPTH
+	float ShadowDepth = texDepth2Dlod(ShadowDepthTexture, float4(ScreenPosition.xy / ScreenPosition.w * ScreenPositionScaleBias.xy + ScreenPositionScaleBias.wz, 0, 0)).r;
+	vec4 DebugColor = vec4(ShadowDepth,ShadowDepth,ShadowDepth,1.0);
+	gl_FragColor = vec4(DebugColor);
+#else
+	highp float SceneW = PreviousDepth(ScreenPosition);
+	
+	// unoptimized
+	//highp float4 ShadowPosition = MulMatrix(ScreenToShadowMatrix, float4(ScreenPosition.xy / ScreenPosition.w * SceneW, SceneW, 1));
+
+	// optimized
+	float4 ShadowPosition = HomShadowStartPos + HomScreenDirection * (SceneW / Divider);
+
+	ShadowPosition.xy /= ShadowPosition.w;
+	// clamp needed to avoid getting unwanted shadows 
+	ShadowPosition.z = min(ShadowPosition.z, 1.0 - Z_PRECISION);
+
+	float Shadow = ManualPCF( ShadowPosition );
+
+//	vec4 UnshadowedColor = float4(1.0,1.0,1.0,1.0);
+//	vec4 ShadowedColor = ShadowModulateColor;
+
+//	vec4 FinalColor = lerp(ShadowedColor,UnshadowedColor,Square(Shadow) * ShadowPosition.y);	// 7 cycles, more correct
+//	vec4 FinalColor = lerp(ShadowedColor,UnshadowedColor,Square(Shadow));	// 7 cycles, more correct
+//	vec4 FinalColor = ShadowedColor + float4(Square(Shadow));			// 5 cycles, faster
+//	vec4 FinalColor = ShadowedColor + float4(Shadow);					// 4 cycles, faster, slightly different self shadowing
+//	vec4 FinalColor = vec4(ShadowedColor.g + Shadow);					// 2 cycles, not colored, slightly different self shadowing
+	// not colored, optimized accepting some minor look change
+//	vec4 FinalColor = vec4(ShadowedColor.g + Shadow);
+
+	// attenuate between shadow color and white based on distance
+	half ShadowAtt = ShadowAttenuation(ScreenPosition,SceneW);
+ 
+	// add modulated/attenuated shadow color to shadow
+	vec4 ShadowedColor = lerp(float4(1.0,1.0,1.0,1.0),ShadowModulateColor,ShadowAtt);
+	vec4 UnshadowedColor = float4(1.0,1.0,1.0,1.0);
+
+	vec4 FinalColor = lerp(ShadowedColor,UnshadowedColor,Square(Shadow));	// 7 cycles, more correct
+
+	// lerp(FinalColor, White, w) = (FinalColor * (1-w)) + w
+	gl_FragColor = FinalColor * FadeColorAndAmount.z + FadeColorAndAmount.w;
+
+#endif	
+}
