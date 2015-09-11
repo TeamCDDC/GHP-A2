@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<GameOptions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" GameName="SGDKTest" GameLongName="SonicGDKReimaginedTest">
+  <GameUniqueID>89e17a67-06fb-44fc-96cd-58d95657e999</GameUniqueID>
+  <MachineUniqueID>3e7e4cb6-cc7d-4f95-9856-01c6961e7a40</MachineUniqueID>
+</GameOptions>

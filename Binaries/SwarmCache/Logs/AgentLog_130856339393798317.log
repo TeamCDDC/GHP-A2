@@ -1,0 +1,325 @@
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] CoordinatorResponding is false
+[Maintain Jobs] Waiting for Job to quit before killing: "34C28755-4609D028-909BB596-3E484A39"
+[Maintain Jobs] Killing rogue Job "34C28755-4609D028-909BB596-3E484A39"
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PostJobStatsToDB] Database error:
+[PostJobStatsToDB] A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server)
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[MaintainCache] Performing cache clean up
+[CleanupJobDirectory] Cleaning up jobs directory
+[CleanupJobDirectory] Done cleaning up jobs directory
+[CleanupJobDirectory] Cleaning up logs directory
+[CleanupJobDirectory] Done cleaning up logs directory
+[MaintainCache] Cleaning up main cache directory
+[MaintainCache] Cache clean up complete
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+[RequestShutdown] Shutdown has been requested
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
+Requesting exit
+[PingCoordinator] Determined that we couldn't ping the coordinator
+[PingCoordinator] Coordinator ping failed
