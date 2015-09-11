@@ -1,0 +1,14 @@
+//================================================================================
+//                  3D Sonic Games Development Kit (SonicGDK)
+//                          by  Javier "Xaklse" Osset
+//
+//  Read SGDKGameInfo.uc file for details about permission to use this software.
+//================================================================================
+// Unreal Engine global include file for UnrealScript; never include this file
+// before the class definition.
+// This file contains a collection of macros automatically available to all
+// SonicGDK classes.
+//================================================================================
+
+/**Macro used to disable game cheats through simple code.*/
+`define NO_CHEATS
